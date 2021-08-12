@@ -26,8 +26,10 @@ Dasturda ishlatilga Flutter packagelar: </br>
 
 ## Dasturning ishlash holati 👇
 
-
+#Video
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/8K3I8-Uc5cM/0.jpg)](https://www.youtube.com/watch?v=8K3I8-Uc5cM)
+</br>
+</br>
 
 <img src="https://i.imgur.com/V8PVZLi.jpg"
      alt="Onboarding page"
