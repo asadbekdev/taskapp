@@ -10,10 +10,10 @@ class TextInput extends StatelessWidget {
     this.keyboardType,
     this.hintText,
     this.validator,
-    this.onChanged,
+    this.onSaved,
     this.controller
   }) : super(key: key);
-  var prefixIcon, keyboardType, hintText, onChanged,controller;
+  var prefixIcon, keyboardType, hintText, onSaved,controller;
   var validator;
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class TextInput extends StatelessWidget {
       ),
       style: TextStyle(color: kPrimaryColor),
       cursorColor: kPrimaryColor,
-      onChanged: onChanged,
+      onSaved: onSaved,
       validator: validator,
     );
   }

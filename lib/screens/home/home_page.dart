@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var formKey = GlobalKey<FormState>();
   DatabaseHelper databaseHelper = DatabaseHelper();
-  var taskTitle, subTitle, taskTime;
+  var taskTitle, taskSubTitle, taskTime;
   static DatabaseHelper? dbTasks;
   static List<TaskClass>? taskList;
 
@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                             },
                             onSaved: (value) {
                               setState(() {
-                                taskTime = value;
+                                taskSubTitle = value;
                               });
                             },
                           ),
@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                             },
                             onSaved: (value) {
                               setState(() {
-                                taskTitle = value;
+                                taskTime = value;
                               });
                             },
                           ),
@@ -205,14 +205,22 @@ class _HomePageState extends State<HomePage> {
                   ButtonBar(
                     children: [
                       ElevatedButton(
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.redAccent),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
                         onPressed: () => Navigator.of(context).pop(),
                         child: Text("Cancel"),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            primary: Colors.greenAccent),
+                          primary: Colors.greenAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
                         child: Text("Send"),
                         onPressed: _addData,
                       ),
@@ -231,7 +239,9 @@ class _HomePageState extends State<HomePage> {
   _addData() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      await databaseHelper.taskAdd(TaskClass(taskTitle)).then((tId) {
+      await databaseHelper
+          .taskAdd(TaskClass(taskTitle, taskSubTitle, taskTime))
+          .then((tId) {
         taskList!.clear();
         dbTasks!.fetchDatas().then((allKategoriyasList) {
           setState(() {
@@ -244,8 +254,6 @@ class _HomePageState extends State<HomePage> {
     }
     Navigator.of(context).pop();
   }
-
-  
 
   body() {
     return Container(

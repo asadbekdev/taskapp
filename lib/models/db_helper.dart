@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:exam/models/task.dart';
+import 'package:exam/models/user.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -61,14 +62,26 @@ class DatabaseHelper {
   }
   Future<int> taskAdd(TaskClass t) async {
     var db = await _getDatabase();
-    var natija = await db.insert("tasks", t.toMap());
-    return natija;
+    var result = await db.insert("tasks", t.toMap());
+    return result;
   }
 
   Future<int> taskDelete(int tID) async {
     var db = await _getDatabase();
     var result = await db
         .delete("tasks", where: 'taskID = ?', whereArgs: [tID]);
+    return result;
+  }
+
+  // user add
+  Future<int> userAdd(Account u) async {
+    var db = await _getDatabase();
+    var result = await db.insert("user", u.toMap());
+    return result;
+  }
+  Future<List<Map<String, dynamic>>> fetchUser() async {
+    var db = await _getDatabase();
+    var result = await db.query("user");
     return result;
   }
 }

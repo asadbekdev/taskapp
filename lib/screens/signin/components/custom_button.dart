@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   CustomButton({
     Key? key,
-    this.text,
-    this.onPressed,
+    required this.text,
+    required this.onPressed,
     required this.size,
   }) : super(key: key);
 

@@ -3,7 +3,7 @@ class TaskClass {
   String? taskSubtitle;
   String? taskTime;
 
-  TaskClass(this.taskTitle);
+  TaskClass(this.taskTitle,this.taskSubtitle,this.taskTime);
 
 
   Map<String, dynamic> toMap() {

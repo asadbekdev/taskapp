@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key? key}) : super(key: key);
-
+  Body({Key? key, this.name, this.number}) : super(key: key);
+  var name, number;
   @override
   _BodyState createState() => _BodyState();
 }
@@ -19,13 +19,12 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: kDefaultPadding),
-            CircleAvatar(),
             SizedBox(height: kDefaultPadding * 1.5),
             Container(
               child: Form(
@@ -47,7 +46,7 @@ class _BodyState extends State<Body> {
                     TextInput(
                       title: 'Your Number',
                       hintText: "Enter your number",
-                      initialValue: '+998991975842',
+                      initialValue: '+998 332887702',
                       maxLength: 13,
                       validator: (value) {
                         if (value.length < 13) {

@@ -1,10 +1,15 @@
 import 'dart:io';
 
 import 'package:exam/constants.dart';
+import 'package:exam/models/db_helper.dart';
+import 'package:exam/models/user.dart';
 import 'package:exam/screens/editprofile/edit_profile.dart';
+import 'package:exam/screens/onboarding/onboarding_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -16,6 +21,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   bool darkModeSwitch = false;
   bool notificationSwitch = false;
+
+  // img picker variables
   File? _image;
   final picker = ImagePicker();
   var pickedFile;
@@ -32,6 +39,26 @@ class _BodyState extends State<Body> {
     });
   }
 
+  // database variables
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  static DatabaseHelper? dbAccounts;
+  static List<Account>? accountList;
+
+  @override
+  void initState() {
+    accountList = <Account>[];
+    dbAccounts = DatabaseHelper();
+    accountList!.clear();
+    dbAccounts!.fetchUser().then((allAccountsList) {
+      setState(() {
+        for (var readAccount in allAccountsList) {
+          accountList!.add(Account.fromMap(readAccount));
+        }
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -45,86 +72,95 @@ class _BodyState extends State<Body> {
             children: [
               SizedBox(height: kDefaultPadding / 2),
               Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => getImage(),
-                      child: _image == null
-                          ? Container(
-                              height: 100.0,
-                              width: 100.0,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: kPrimaryColor,
-                                    width: 2.5,
-                                  ),
-                                  color: Colors.white),
-                              child: Icon(
-                                Icons.add_a_photo_outlined,
-                                size: 30.0,
-                                color: kPrimaryColor,
-                              ),
-                            )
-                          : Container(
-                              height: 100.0,
-                              width: 100.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: kSecondaryColor, width: 2.5),
+                child: FutureBuilder(
+                    future: dbAccounts!.fetchUser(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () => getImage(),
+                              child: _image == null
+                                  ? Container(
+                                      height: 100.0,
+                                      width: 100.0,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: kPrimaryColor,
+                                            width: 2.5,
+                                          ),
+                                          color: Colors.white),
+                                      child: Icon(
+                                        Icons.add_a_photo_outlined,
+                                        size: 30.0,
+                                        color: kPrimaryColor,
+                                      ),
+                                    )
+                                  : Container(
+                                      height: 100.0,
+                                      width: 100.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: kSecondaryColor, width: 2.5),
+                                        color: Colors.white,
+                                        image: DecorationImage(
+                                          image: FileImage(_image!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            SizedBox(height: kDefaultPadding / 2),
+                            Text(
+                              "${accountList![accountList!.length - 1].name}",
+                              style: TextStyle(
                                 color: Colors.white,
-                                image: DecorationImage(
-                                  image: FileImage(_image!),
-                                  fit: BoxFit.cover,
+                                fontSize: 22.0,
+                              ),
+                            ),
+                            SizedBox(height: kDefaultPadding / 6),
+                            Text(
+                              "${accountList![accountList!.length - 1].number}",
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(height: kDefaultPadding / 4),
+                            ElevatedButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfile(),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Edit Profile",
+                                  ),
+                                  Icon(Icons.arrow_forward_ios, size: 17),
+                                ],
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                primary: Color(0xff5450D6),
+                                fixedSize:
+                                    Size(size.width * 0.37, size.height * 0.04),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
                             ),
-                    ),
-                    SizedBox(height: kDefaultPadding / 2),
-                    Text(
-                      "Asadbek Noyibjonov",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22.0,
-                      ),
-                    ),
-                    SizedBox(height: kDefaultPadding / 6),
-                    Text(
-                      "+998 1975842",
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    SizedBox(height: kDefaultPadding / 4),
-                    ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditProfile(),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Edit Profile",
-                          ),
-                          Icon(Icons.arrow_forward_ios, size: 17),
-                        ],
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xff5450D6),
-                        fixedSize: Size(size.width * 0.37, size.height * 0.04),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                          ],
+                        );
+                      }
+                      return CircularProgressIndicator();
+                    }),
               ),
               SizedBox(height: kDefaultPadding * 1.5),
               Container(
@@ -197,11 +233,13 @@ class _BodyState extends State<Body> {
                           CupertinoSwitch(
                             value: darkModeSwitch,
                             onChanged: (value) {
-                              setState(() {
-                                darkModeSwitch == false
-                                    ? darkModeSwitch = true
-                                    : darkModeSwitch = false;
-                              });
+                              setState(
+                                () {
+                                  darkModeSwitch == false
+                                      ? darkModeSwitch = true
+                                      : darkModeSwitch = false;
+                                },
+                              );
                             },
                             trackColor: Colors.white,
                             activeColor: kPrimaryColor,
@@ -248,8 +286,11 @@ class _BodyState extends State<Body> {
                         ],
                       ),
                     ),
+                    // SUPPORT BUTTON
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        launch("https://t.me/asadbekdev");
+                      },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.transparent,
                         shadowColor: Colors.transparent,
@@ -284,7 +325,16 @@ class _BodyState extends State<Body> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        CircularProgressIndicator();
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Onboarding(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.transparent,
                         shadowColor: Colors.transparent,

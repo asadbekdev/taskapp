@@ -12,8 +12,9 @@ FirebaseAuth auth = FirebaseAuth.instance;
 
 // ignore: must_be_immutable
 class SmsCode extends StatefulWidget {
-  SmsCode({Key? key, this.phoneNumber}) : super(key: key);
+  SmsCode({Key? key, this.phoneNumber,this.addUser}) : super(key: key);
   TextEditingController? phoneNumber;
+  var addUser;
 
   @override
   _SmsCodeState createState() => _SmsCodeState();
